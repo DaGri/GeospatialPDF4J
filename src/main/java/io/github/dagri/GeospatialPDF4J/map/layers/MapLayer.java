@@ -120,9 +120,6 @@ public abstract class MapLayer implements IPdfAddable {
 	 *             incorrect.
 	 */
 	public void calcLayerInches() throws CalcualteLayerInchesException {
-		
-		System.out.println("!!!CALCULATING THE LAYER INCHES NOW!!!");
-		
 		// MAKE SURE NOTHING NEEDED IS NULL OR INVALID VALUE
 		if (this.getMapBBox() != null && this.getLayerBBox() != null && this.getMapInchesWidth() != Double.NEGATIVE_INFINITY && this.getMapInchesHeight() != Double.NEGATIVE_INFINITY) {
 
@@ -274,7 +271,7 @@ public abstract class MapLayer implements IPdfAddable {
 	 * @param layerBBox
 	 *            the layerBBox to set
 	 */
-	private void setLayerBBox(BoundingBox layerBBox) {
+	protected void setLayerBBox(BoundingBox layerBBox) {
 		this.layerBBox = layerBBox;
 	}
 
