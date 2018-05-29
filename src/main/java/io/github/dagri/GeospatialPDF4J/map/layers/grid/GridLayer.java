@@ -257,7 +257,6 @@ public class GridLayer extends DrawLayer {
 	@Override
 	public void addToPdf(Document doc) {
 		log.debug("Creating a partental PDFLayer for the GridLayer; a GridDrawer and drawing the content...");
-		// TODO : HIER MUESSTE AUCH THIS.GETWRITER GEHEN
 		PdfLayer overlayer = this.createParentalPdfLayer("Grid-Layer", this.getWriter());
 		GridDrawer drawer = new GridDrawer(this.getWriter(), this, this.createTopTreeElement("Grid-Layer"), overlayer);
 		drawer.drawAll();

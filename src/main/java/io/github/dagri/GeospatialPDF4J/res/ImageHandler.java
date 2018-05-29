@@ -130,6 +130,9 @@ public class ImageHandler {
 	 *
 	 * @param buffImg
 	 *            the {@link BufferedImage} to convert
+	 * @param transparency
+	 *            the transparency of the {@link Image} to create as a value
+	 *            between 0 and 255.
 	 * @return the converted iText {@link Image}
 	 * @throws ImageCovertingException
 	 */
@@ -190,6 +193,37 @@ public class ImageHandler {
 		float h = (int) Math.round(inchesHeight * 72);
 		log.debug("Scaling the image to the given pixel size...");
 		img.scaleAbsolute(w, h);
+		log.debug("Returning th scaled image...");
+		return img;
+	}
+
+	// TODO : TEST METHOD
+	/**
+	 * Scales the given {@link Image} to fit the given maximal inch-value; in X-
+	 * or Y- direction.
+	 *
+	 * @param img
+	 *            the {@link Image} to scale
+	 * @param inchesMax
+	 *            the maximum value in inches as {@link Double}
+	 * @return the scaled {@link Image}
+	 */
+	public Image scaleToFitInchesMax(Image img, double inchesMax) {
+		log.debug("Rounding the given inch values after converting them to standard-pixel values...");
+		float w_px = (int) Math.round(inchesMax * 72);
+		float h_px = (int) Math.round(inchesMax * 72);
+
+		if (w_px < h_px) {
+			log.debug("Width is smaller than the height. Using the width to calculate the factor...");
+			float w_factor = w_px / img.getWidth();
+			log.debug("Scaling the image...");
+			img.scalePercent(w_factor);
+		} else {
+			log.debug("Width is smaller than the height. Using the width to calculate the factor...");
+			float h_factor = (h_px / img.getHeight())*100;
+			log.debug("Scaling the image...");
+			img.scalePercent(h_factor);
+		}
 		log.debug("Returning th scaled image...");
 		return img;
 	}
@@ -278,7 +312,8 @@ public class ImageHandler {
 	 * @return a new {@link LayerImage}
 	 * @throws ImageCovertingException
 	 */
-	public LayerImage convertToLayerImage(BufferedImage buffImg, double xOffset, double yOffset, double inchesToCoverWidth, double inchesToCoverHeight, int transparency) throws ImageCovertingException {
+	public LayerImage convertToLayerImage(BufferedImage buffImg, double xOffset, double yOffset, double inchesToCoverWidth, double inchesToCoverHeight, int transparency)
+			throws ImageCovertingException {
 		// CREATE THE LAYERIMAGE
 		LayerImage erg = new LayerImage();
 

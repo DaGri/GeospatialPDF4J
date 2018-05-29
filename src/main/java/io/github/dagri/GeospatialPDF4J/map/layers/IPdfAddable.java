@@ -4,6 +4,8 @@ import com.lowagie.text.Document;
 import com.lowagie.text.pdf.PdfWriter;
 
 import io.github.dagri.GeospatialPDF4J.exceptions.MapLayerNotReceivableException;
+import io.github.dagri.GeospatialPDF4J.geo.BoundingBox;
+import io.github.dagri.GeospatialPDF4J.map.Map;
 
 /**
  * Interface to be used by the abstract parental map layer classes to force some
@@ -24,6 +26,10 @@ public interface IPdfAddable {
 	 * original CRS. In the following method-call 'prepare for adding' the
 	 * received objects shall be transformed into the local system of the
 	 * PDF-page.
+	 * 
+	 * If you use this interface for a {@link MapLayer} typically the
+	 * {@link BoundingBox} of the {@link Map} is present in the {@link MapLayer}
+	 * , as well as the inches the {@link MapLayer} covers.
 	 */
 	public abstract void receive() throws MapLayerNotReceivableException;
 
@@ -33,6 +39,10 @@ public interface IPdfAddable {
 	 * received from their origin-CRS to the PDF-page internal
 	 * coordinate-system.
 	 * 
+	 * If you use this interface for a {@link MapLayer} typically the
+	 * {@link BoundingBox} of the {@link Map} is present in the {@link MapLayer}
+	 * , as well as the inches the {@link MapLayer} covers.
+	 * 
 	 * @throws MapLayerNotReceivableException
 	 */
 	public abstract void prepareForAdding(Document doc) throws MapLayerNotReceivableException;
@@ -40,6 +50,10 @@ public interface IPdfAddable {
 	/**
 	 * Adds the {@link MapLayer} to the PDF-document using the internal stored
 	 * informations and the {@link PdfWriter} of the document.
+	 * 
+	 * If you use this interface for a {@link MapLayer} typically the
+	 * {@link BoundingBox} of the {@link Map} is present in the {@link MapLayer}
+	 * , as well as the inches the {@link MapLayer} covers.
 	 *
 	 * @throws MapLayerNotReceivableException
 	 */
