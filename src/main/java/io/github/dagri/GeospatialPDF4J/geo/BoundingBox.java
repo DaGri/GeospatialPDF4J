@@ -7,6 +7,8 @@ import org.geotools.geometry.DirectPosition2D;
 import io.github.dagri.GeospatialPDF4J.exceptions.BoundingboxNotCreatableException;
 import io.github.dagri.GeospatialPDF4J.exceptions.ChangedCoordinateOrderException;
 import io.github.dagri.GeospatialPDF4J.exceptions.CoordinateTransformException;
+import io.github.dagri.GeospatialPDF4J.exceptions.CoordinatesExchangedInEastingtException;
+import io.github.dagri.GeospatialPDF4J.exceptions.CoordinatesExchangedInNorthingException;
 import io.github.dagri.GeospatialPDF4J.exceptions.ImpossibleCoordinateOrderException;
 import io.github.dagri.GeospatialPDF4J.exceptions.MissingCrsException;
 import io.github.dagri.GeospatialPDF4J.res.CoordinateTransformer;
@@ -108,7 +110,29 @@ public class BoundingBox {
 			log.debug("Coordinates exchanged. Checking again...");
 			try {
 				this.checkCoordinateOrder(ll, ur);
-			} catch (ImpossibleCoordinateOrderException | ChangedCoordinateOrderException e1) {
+			} catch (ImpossibleCoordinateOrderException | ChangedCoordinateOrderException | CoordinatesExchangedInNorthingException | CoordinatesExchangedInEastingtException e1) {
+				log.error(e.getMessage().toString());
+				throw new BoundingboxNotCreatableException();
+			}
+		} catch (CoordinatesExchangedInNorthingException e) {
+			double temp = ll.getOrdinate(1);
+			ll.setOrdinate(1, ur.getOrdinate(1));
+			ur.setOrdinate(1, temp);
+			log.debug("Coordinates exchanged. Checking again...");
+			try {
+				this.checkCoordinateOrder(ll, ur);
+			} catch (ImpossibleCoordinateOrderException | ChangedCoordinateOrderException | CoordinatesExchangedInNorthingException | CoordinatesExchangedInEastingtException e1) {
+				log.error(e.getMessage().toString());
+				throw new BoundingboxNotCreatableException();
+			}
+		} catch (CoordinatesExchangedInEastingtException e) {
+			double temp = ll.getOrdinate(0);
+			ll.setOrdinate(0, ur.getOrdinate(0));
+			ur.setOrdinate(0, temp);
+			log.debug("Coordinates exchanged. Checking again...");
+			try {
+				this.checkCoordinateOrder(ll, ur);
+			} catch (ImpossibleCoordinateOrderException | ChangedCoordinateOrderException | CoordinatesExchangedInNorthingException | CoordinatesExchangedInEastingtException e1) {
 				log.error(e.getMessage().toString());
 				throw new BoundingboxNotCreatableException();
 			}
@@ -181,6 +205,8 @@ public class BoundingBox {
 	 * with one another. Throws {@link ChangedCoordinateOrderException} if the
 	 * geometry of the {@link DirectPosition2D}s is possible, if they would be
 	 * exchanged with one another.
+	 * 
+	 * TODO : WEITERE BESCHREIBUNGEN EINFUEGEN
 	 *
 	 * @param ll
 	 *            the lower left {@link DirectPosition2D}
@@ -188,8 +214,10 @@ public class BoundingBox {
 	 *            the upper right {@link DirectPosition2D}
 	 * @throws ImpossibleCoordinateOrderException
 	 * @throws ChangedCoordinateOrderException
+	 * @throws CoordinatesExchangedInNorthingException 
+	 * @throws CoordinatesExchangedInEastingtException 
 	 */
-	private void checkCoordinateOrder(DirectPosition2D ll, DirectPosition2D ur) throws ImpossibleCoordinateOrderException, ChangedCoordinateOrderException {
+	private void checkCoordinateOrder(DirectPosition2D ll, DirectPosition2D ur) throws ImpossibleCoordinateOrderException, ChangedCoordinateOrderException, CoordinatesExchangedInNorthingException, CoordinatesExchangedInEastingtException {
 		// ALL DIRECTPOSITIONS ARE IN UTM SYSTEM ALREADY
 		// ORDINATE 0 --> EAST VALUE
 		// ORDINATE 1 --> NORTH VALUE
@@ -200,7 +228,15 @@ public class BoundingBox {
 		else if (ll.getOrdinate(1) > ur.getOrdinate(1) && ll.getOrdinate(0) > ur.getOrdinate(0)) {
 			log.error("Coordinate2D order exchanged. ");
 			throw new ChangedCoordinateOrderException();
+		} 
+		// ELSE IF THE COORDINATES ARE EXCHANGED IN THEIR NORTH VALUE (LL = UL && UR == LR)
+		else if(ll.getOrdinate(1) > ur.getOrdinate(1) && ll.getOrdinate(0) < ur.getOrdinate(0)){
+			throw new CoordinatesExchangedInNorthingException();
 		}
+		// ELSE IF THE COORDINATES ARE EXCHANGED IN THEIR EAST VALUE (LL = LR && UR == UL)
+		else if(ll.getOrdinate(1) < ur.getOrdinate(1) && ll.getOrdinate(0) > ur.getOrdinate(0)){
+			throw new CoordinatesExchangedInEastingtException();
+		} 
 		// ELSE THROW EXCEPTION
 		else {
 			log.error("Coordinate2D order impossible!");

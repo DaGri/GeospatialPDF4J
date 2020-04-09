@@ -86,7 +86,7 @@ public class ServerTalker {
 	 * Boolean that indicates if any created request string shall be written out
 	 * in the console.
 	 */
-	private boolean				writeRequestStringToConsole	= false;
+	private boolean				writeRequestStringToConsole	= true;
 
 	// CONSTRUCTORS
 
@@ -435,17 +435,20 @@ public class ServerTalker {
 				erg = ImageIO.read(new URL(requestString));
 			} catch (IOException e) {
 				log.error("Requesting try " + t.getRequestTry() + " failed.");
+				e.printStackTrace();
 			}
 		}
 
 		// ABFRAGE GESCHEITERT : LEERES BILD ERSTELLEN UND ZURUCKGEBEN
-		if (erg == null) {
+		if (erg == null && t!=null&&t.getImageWidth()!=0&&t.getImageHeight()!=0) {
 			log.error("Could not receive Tile image from the server!");
 			log.debug("Creating an empty image to add the received image to...");
-			erg = ImageHandler.getInstance().createEmptyImage(t.getImageWidth(), t.getImageHeight());
-
+//			log.info(""+t.getImageWidth()+", "+t.getImageHeight());
+//			ImageHandler imgH = ImageHandler.getInstance();
+//			erg = imgH.createEmptyImage(t.getImageWidth(), t.getImageHeight());
+			erg = new BufferedImage(t.getImageWidth(), t.getImageHeight(), BufferedImage.TYPE_INT_ARGB);
 			log.debug("Created empty image.");
-		}
+		} 
 
 		// MAY WRITE THE IMAGES TO THE FILE SYSTEM, IF DESIRED
 		if (this.isWriteImagesToFileSystem()) {
