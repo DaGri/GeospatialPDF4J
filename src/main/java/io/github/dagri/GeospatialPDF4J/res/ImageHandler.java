@@ -57,7 +57,7 @@ public class ImageHandler {
 		if (instance == null) {
 			log.debug("Instance was null. Creating new Imagehandler.");
 			instance = new ImageHandler();
-		}
+		} 
 		return instance;
 	}
 
@@ -284,7 +284,7 @@ public class ImageHandler {
 	public void writeToFileSystem(BufferedImage buff) {
 		try {
 			log.info("Writing a BufferedImage to the filesystem...");
-			File outputfile = new File("output/" + System.currentTimeMillis() + ".png");
+			File outputfile = new File("./output/" + System.currentTimeMillis() + ".png");
 			ImageIO.write(buff, "png", outputfile);
 			log.info("BufferedImage written.");
 		} catch (IOException e) {
